@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход и Регистрация - Oriyon.tj</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="header-footer.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Основные стили для страницы авторизации */
+        .auth-container {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 500px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background-color: #1a56db;
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 10px 40px 10px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .auth-form input.invalid {
+            border-color: #ef4444;
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a56db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .auth-form button:disabled {
+            background-color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .auth-form button:hover:not(:disabled) {
+            background-color: #1645b5;
+        }
+
+        .auth-form a {
+            color: #1a56db;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Стили для иконки показать/скрыть пароль */
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .password-toggle:hover {
+            color: #1a56db;
+        }
+
+        /* Стили для прогресс-бара */
+        .password-strength {
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 5px;
+            background-color: #e2e8f0;
+            display: none;
+        }
+
+        .password-strength.weak {
+            display: block;
+            background-color: #ef4444;
+            width: 33%;
+        }
+
+        .password-strength.medium {
+            display: block;
+            background-color: #f59e0b;
+            width: 66%;
+        }
+
+        .password-strength.strong {
+            display: block;
+            background-color: #10b981;
+            width: 100%;
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .modal-content button {
+            width: 48%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 16px;
+                margin: 10px;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .tab-btn {
+                min-width: 100%;
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .auth-form input {
+                font-size: 14px;
+                padding: 8px 35px 8px 8px;
+            }
+
+            .auth-form button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .password-toggle {
+                right: 8px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 12px;
+            }
+
+            .auth-form input {
+                font-size: 12px;
+            }
+
+            .auth-form button {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .modal-content {
+                padding: 15px;
+                max-width: 300px;
+            }
+
+            .password-toggle {
+                font-size: 14px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .auth-container {
+                max-width: 450px;
+            }
+
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTU2ZGIiIHJ4PSIxMCIvPjxwYXRoIGQ9Ik0zMCAzMEg3MFY3MEgzMFYzMHpNNDAgNDBINjBWNjBINDBWNDB6IiBmaWxsPSJ3aGl0ZSIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjE1IiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==" alt="Oriyon Logo">
+                    Oriyon.tj
+                </div>
+                <div class="location-selector">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Ҳамаи Тоҷикистон</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="user-actions">
+                    <a href="#"><i class="far fa-heart"></i> Дӯстдошта</a>
+                    <a href="#"><i class="fas fa-plus"></i> Ворид кардани eълон</a>
+                    <a href="auth.html"><i class="fas fa-user"></i> Вход/Регистрация</a>
+                </div>
+            </div>
+            <div class="header-bottom">
+                <div class="search-bar">
+                    <input type="text" placeholder="ҶустуҷŮи eълон...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <button class="categories-btn">
+                    <i class="fas fa-bars"></i>
+                    Ҳамаи категорияҳо
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="auth-container">
+            <h1>Вход и Регистрация</h1>
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('login')">Вход</button>
+                <button class="tab-btn" onclick="showTab('register')">Регистрация</button>
+            </div>
+
+            <!-- Форма входа -->
+            <div id="login" class="auth-form active">
+                <div class="form-group">
+                    <input type="tel" id="login-phone" placeholder="Номер телефона (+992...)" maxlength="12" required>
+                    <div id="login-phone-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="Пароль" maxlength="50" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('login-password')"></i>
+                    <div id="login-password-error" class="error-message"></div>
+                </div>
+                <button id="login-button" disabled onclick="handleLogin()">Войти</button>
+                <a href="#">Забыли пароль?</a>
+            </div>
+
+            <!-- Форма регистрации -->
+            <div id="register" class="auth-form">
+                <div class="form-group">
+                    <input type="text" id="register-name" placeholder="Имя" maxlength="50" required>
+                    <div id="register-name-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="register-phone" placeholder="Номер телефона (+992...)" maxlength="12" required>
+                    <div id="register-phone-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-password" placeholder="Пароль" maxlength="50" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('register-password')"></i>
+                    <div id="register-password-error" class="error-message"></div>
+                    <div class="password-strength" id="password-strength"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-confirm-password" placeholder="Подтвердите пароль" maxlength="50" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword('register-confirm-password')"></i>
+                    <div id="register-confirm-password-error" class="error-message"></div>
+                </div>
+                <button id="register-button" disabled onclick="handleRegister()">Зарегистрироваться</button>
+            </div>
+
+            <!-- Модальное окно для сообщений -->
+            <div id="authModal" class="modal">
+                <div class="modal-content">
+                    <p id="modal-message"></p>
+                    <button onclick="closeModal()">ОК</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Кӯмак</h3>
+                    <ul>
+                        <li><a href="#">Чӣ тавр eълон ворид карда мешавад</a></li>
+                        <li><a href="#">Амният</a></li>
+                        <li><a href="#">Саволҳои зиёд такроршаванда</a></li>
+                        <li><a href="#">Қоидаҳои сомона</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Дар бораи ширкат</h3>
+                    <ul>
+                        <li><a href="#">Дар бораи мо</a></li>
+                        <li><a href="#">Вакансияҳо</a></li>
+                        <li><a href="#">Реклама дар сомона</a></li>
+                        <li><a href="#">Барои матбуот</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Тамос бо мо</h3>
+                    <ul>
+                        <li><a href="#">Фикру мулоҳиза</a></li>
+                        <li><a href="#">Тамосҳо</a></li>
+                        <li><a href="#">Дастгирī</a></li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                    </div>
+                    <div class="language-selector">
+                        <button class="active">Тоҷ</button>
+                        <button>Рус</button>
+                        <button>Eng</button>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Oriyon дар кишварҳои дигар</h3>
+                    <ul>
+                        <li><a href="#">Oriyon Россия</a></li>
+                        <li><a href="#">Oriyon Ӯзбекистон</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Oriyon.tj — eълонҳои ройгон. Ҳама ҳуқуқҳо ҳифз шудаанд.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Переключение вкладок
+        function showTab(tabId) {
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Очистка ошибок и прогресс-бара
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('invalid');
+            });
+            document.getElementById('password-strength').className = 'password-strength';
+            updateButtonState();
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        // Показ модального окна
+        function showModal(message) {
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        // Экранирование ввода для предотвращения XSS
+        function sanitizeInput(input) {
+            const div = document.createElement('div');
+            div.textContent = input;
+            return div.innerHTML;
+        }
+
+        // Валидация телефона
+        function validatePhone(phone) {
+            const cleanedPhone = phone.replace(/[\s-]/g, '');
+            const phoneRegex = /^\+992\d{10}$/;
+            return phoneRegex.test(cleanedPhone);
+        }
+
+        // Валидация имени
+        function validateName(name) {
+            const nameRegex = /^[A-Za-zА-Яа-яЁё]{2,50}$/;
+            return nameRegex.test(name);
+        }
+
+        // Валидация пароля и оценка силы
+        function validatePassword(password) {
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,50}$/;
+            return passwordRegex.test(password) && !/\s/.test(password);
+        }
+
+        function getPasswordStrength(password) {
+            let score = 0;
+            if (password.length >= 8) score += 1;
+            if (/[A-Za-z]/.test(password)) score += 1;
+            if (/\d/.test(password)) score += 1;
+            if (/[@$!%*?&]/.test(password)) score += 1;
+
+            if (score <= 2) return 'weak';
+            if (score === 3) return 'medium';
+            return 'strong';
+        }
+
+        // Показать/скрыть пароль
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Обновление состояния кнопок
+        function updateButtonState() {
+            const loginPhone = document.getElementById('login-phone').value.trim();
+            const loginPassword = document.getElementById('login-password').value.trim();
+            const registerName = document.getElementById('register-name').value.trim();
+            const registerPhone = document.getElementById('register-phone').value.trim();
+            const registerPassword = document.getElementById('register-password').value.trim();
+            const registerConfirmPassword = document.getElementById('register-confirm-password').value.trim();
+
+            document.getElementById('login-button').disabled = !(
+                validatePhone(loginPhone) && validatePassword(loginPassword)
+            );
+
+            document.getElementById('register-button').disabled = !(
+                validateName(registerName) &&
+                validatePhone(registerPhone) &&
+                validatePassword(registerPassword) &&
+                registerPassword === registerConfirmPassword
+            );
+        }
+
+        // Валидация формы входа
+        function validateLoginForm() {
+            const phone = document.getElementById('login-phone').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            let isValid = true;
+
+            // Очистка ошибок
+            document.getElementById('login-phone-error').style.display = 'none';
+            document.getElementById('login-password-error').style.display = 'none';
+            document.getElementById('login-phone').classList.remove('invalid');
+            document.getElementById('login-password').classList.remove('invalid');
+
+            if (!phone) {
+                document.getElementById('login-phone-error').textContent = 'Введите номер телефона.';
+                document.getElementById('login-phone-error').style.display = 'block';
+                document.getElementById('login-phone').classList.add('invalid');
+                isValid = false;
+            } else if (!validatePhone(phone)) {
+                document.getElementById('login-phone-error').textContent = 'Номер должен начинаться с +992 и содержать 9 цифр.';
+                document.getElementById('login-phone-error').style.display = 'block';
+                document.getElementById('login-phone').classList.add('invalid');
+                isValid = false;
+            }
+
+            if (!password) {
+                document.getElementById('login-password-error').textContent = 'Введите пароль.';
+                document.getElementById('login-password-error').style.display = 'block';
+                document.getElementById('login-password').classList.add('invalid');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                document.getElementById('login-password-error').textContent = 'Пароль должен быть минимум 8 символов, содержать буквы, цифры и спецсимволы.';
+                document.getElementById('login-password-error').style.display = 'block';
+                document.getElementById('login-password').classList.add('invalid');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Валидация формы регистрации
+        function validateRegisterForm() {
+            const name = document.getElementById('register-name').value.trim();
+            const phone = document.getElementById('register-phone').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const confirmPassword = document.getElementById('register-confirm-password').value.trim();
+            let isValid = true;
+
+            // Очистка ошибок
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+            document.querySelectorAll('input').forEach(input => {
+                input.classList.remove('invalid');
+            });
+
+            if (!name) {
+                document.getElementById('register-name-error').textContent = 'Введите имя.';
+                document.getElementById('register-name-error').style.display = 'block';
+                document.getElementById('register-name').classList.add('invalid');
+                isValid = false;
+            } else if (!validateName(name)) {
+                document.getElementById('register-name-error').style.display = 'block';
+                document.getElementById('register-name').classList.add('invalid');
+                isValid = false;
+            }
+
+            if (!phone) {
+                document.getElementById('register-phone-error').textContent = 'Введите номер телефона.';
+                document.getElementById('register-phone-error').style.display = 'block';
+                document.getElementById('register-phone').classList.add('invalid');
+                isValid = false;
+            } else if (!validatePhone(phone)) {
+                document.getElementById('register-phone-error').style.display = 'block';
+                document.getElementById('register-phone').classList.add('invalid');
+                isValid = false;
+            }
+
+            if (!password) {
+                document.getElementById('register-password-error').style.display = 'block';
+                document.getElementById('register-password').classList.add('invalid');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                document.getElementById('register-password-error').style.display = 'block';
+                document.getElementById('register-password').classList.add('invalid');
+                isValid = false;
+            }
+
+            if (!confirmPassword) {
+                document.getElementById('register-confirm-password-error').style.display = 'block';
+                document.getElementById('register-confirm-password').classList.add('invalid');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                document.getElementById('register-confirm-password-error').textContent = 'Пароли не совпадают.';
+                document.getElementById('register-confirm-password-error').style.display = 'block';
+                document.getElementById('register-confirm-password').classList.add('invalid');
+                isValid = false;
+            }
+
+            // Обновление прогресс-бара
+            const strengthBar = document.getElementById('password-strength');
+            if (password) {
+                strengthBar.className = `password-strength ${getPasswordStrength(password)}`;
+            } else {
+                strengthBar.className = 'password-strength';
+            }
+
+            return isValid;
+        }
+
+        // Обработка входа
+        function handleLogin() {
+            if (!validateLoginForm()) return;
+
+            const phone = sanitizeInput(document.getElementById('login-phone').value.trim());
+            const password = document.getElementById('login-password').value.trim();
+
+            // Симуляция отправки данных на сервер
+            console.log('Login:', { phone, password });
+            showModal('Вход выполнен успешно! (В реальности: отправить на сервер)');
+        }
+
+        // Обработка регистрации
+        function handleRegister() {
+            if (!validateRegisterForm()) return;
+
+            const name = sanitizeInput(document.getElementById('register-name').value.trim());
+            const phone = sanitizeInput(document.getElementById('register-phone').value.trim());
+            const password = document.getElementById('register-password').value.trim();
+
+            // Симуляция отправки данных на сервер
+            console.log('Register:', { name, phone, password });
+            showModal('Регистрация выполнена успешно! (В реальности: отправить на сервер)');
+        }
+
+        // Мгновенная валидация при вводе
+        document.querySelectorAll('.auth-form input').forEach(input => {
+            input.addEventListener('input', () => {
+                validateLoginForm();
+                validateRegisterForm();
+                updateButtonState();
+            });
+        });
+    </script>
+</body>
+</html>
